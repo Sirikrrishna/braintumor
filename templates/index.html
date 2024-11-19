@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Brain Tumor Detection</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+    <style>
+        body {
+            background-color: #f3f4f6;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+        
+        .prediction-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .image-preview {
+            width: 100%;
+            height: 400px;
+            object-fit: contain;
+            border-radius: 8px;
+            background-color: #ffffff;
+        }
+        
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .results-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .upload-btn {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .upload-btn input[type=file] {
+            position: absolute;
+            top: 0;
+            right: 0;
+            min-width: 100%;
+            min-height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="min-h-screen py-8">
+        <div class="prediction-container px-4">
+            <div class="text-center mb-8">
+                <h1 class="text-4xl font-bold text-gray-800 mb-2">Brain Tumor Detection</h1>
+                <p class="text-gray-600">Upload a brain MRI scan for analysis</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Image Upload Section -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <div class="mb-6">
+                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-4">
+                            <img id="photo" class="image-preview hidden" src="" alt="Uploaded image">
+                            <video id="video" class="image-preview" poster="/api/placeholder/400/320"></video>
+                            <canvas id="canvas" class="hidden"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-4">
+                        <button id="uload" class="upload-btn flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition duration-200">
+                            Upload Image
+                            <input type="file" id="fileinput" accept="image/*">
+                        </button>
+                        <button id="send" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md transition duration-200">
+                            Analyze
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Results Section -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Analysis Results</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- <div class="results-container bg-gray-50 p-4 rounded-md">
+                            <div class="res-part2"></div>
+                        </div> -->
+                        <!-- <div class="results-container bg-gray-50 p-10 rounded-md">
+                            <div class="res-part"></div> -->
+
+                        <div class="results-container bg-gray-50 p-10 rounded-md" style="width: 500px; height: 200px;">
+                            <div class="res-part"></div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="loader"></div>
+    </div>
+
+    <input type="hidden" id="url" value="../predict"/>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        var base_data = "";
+
+        function sendRequest(base64Data) {
+            if(!base64Data) return;
+            
+            var url = $("#url").val();
+            $("#loading").removeClass('hidden').addClass('flex');
+            
+            $.ajax({
+                url: url,
+                type: "post",
+                cache: false,
+                async: true,
+                crossDomain: true,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin':'*'
+                },
+                data: JSON.stringify({image: base64Data}),
+                success: function(res){
+                    $(".res-part").html("");
+                    $(".res-part2").html("");
+                    
+                    try {
+                        var imageData = res[1].image;
+                        if(imageData && imageData.length > 100) {
+                            $(".res-part2").append("<img class='w-full h-auto rounded' src='data:image/jpeg;base64," + imageData + "' alt='Result' />");
+                        }
+                    } catch(e) {}
+                    
+                    $(".res-part").html("<pre class='text-sm'>" + JSON.stringify(res[0], undefined, 2) + "</pre>");
+                    $("#loading").removeClass('flex').addClass('hidden');
+                }
+            });
+        }
+
+        $(document).ready(function(){
+            $('#send').click(function() {
+                sendRequest(base_data);
+            });
+
+            $("#fileinput").change(function(){
+                if (this.files && this.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        var url = e.target.result;
+                        var img = new Image();
+                        img.crossOrigin = 'Anonymous';
+                        img.onload = function() {
+                            var canvas = document.createElement('CANVAS');
+                            var ctx = canvas.getContext('2d');
+                            canvas.height = this.height;
+                            canvas.width = this.width;
+                            ctx.drawImage(this, 0, 0);
+                            base_data = canvas.toDataURL('image/jpeg', 1.0).replace(/^data:image.+;base64,/, '');
+                            canvas = null;
+                        };
+                        img.src = url;
+                        $('#photo').attr('src', url).removeClass('hidden');
+                        $('#video').addClass('hidden');
+                    }
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
