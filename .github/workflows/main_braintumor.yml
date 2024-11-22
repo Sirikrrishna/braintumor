@@ -23,14 +23,14 @@ jobs:
       uses: docker/login-action@v2
       with:
         registry: https://braintumorapp.azurecr.io/
-        username: ${{ secrets.AzureAppService_ContainerUsername_190ce87eb4de4c398f745eec8cde6ab2 }}
-        password: ${{ secrets.AzureAppService_ContainerPassword_237b7f425bd2457e8a812a09f1a9c311 }}
+        username: ${{ secrets.AzureAppService_ContainerUsername_628de932a55545e3a2f863bd2a8aabe9 }}
+        password: ${{ secrets.AzureAppService_ContainerPassword_0afe32e361bb4cce821f44521e6a2133 }}
 
     - name: Build and push container image to registry
       uses: docker/build-push-action@v3
       with:
         push: true
-        tags: braintumorapp.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_190ce87eb4de4c398f745eec8cde6ab2 }}/braintumor:${{ github.sha }}
+        tags: braintumorapp.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_628de932a55545e3a2f863bd2a8aabe9 }}/braintumorapp/braintumor:${{ github.sha }}
         file: ./Dockerfile
 
   deploy:
@@ -47,5 +47,5 @@ jobs:
       with:
         app-name: 'braintumor'
         slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_c8dca04f704e4df2ad15bd6d15ba2c96 }}
-        images: 'braintumorapp.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_190ce87eb4de4c398f745eec8cde6ab2 }}/braintumor:${{ github.sha }}'
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_44cf0409cf3d49e7a42dd876d6281c75 }}
+        images: 'braintumorapp.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_628de932a55545e3a2f863bd2a8aabe9 }}/braintumorapp/braintumor:${{ github.sha }}'
