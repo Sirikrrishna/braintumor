@@ -77,81 +77,47 @@ Instructions to set up your local environment for running the project
   ```bash
   docker build -t brain_tumor_classifier .
 
-#### Set Up AWS EC2 Instance
-- Host the deployed application on an **AWS EC2** instance.
-- Pull the Docker image from **AWS ECR** and run the application on EC2.
+#### Deploy on Azure App Service:
+- Push the Docker image to **Azure Container Registry (ACR)**.
+- Link the container from **ACR** to an **Azure App Service**.
 
 #### Automate Deployment with GitHub Actions
 - Use **GitHub Actions** to automate the deployment workflow.
 - On each code push:
-  - Retrain the model.
+  - Retrain the model using **DVC**.
   - Build the Docker image.
-  - Push it to **AWS ECR**.
-  - Pull the image to **EC2**.
-  - Run the application.
-
+  - Push the image to **ACR**.
+  - Deploy the container to **Azure App Service**.
 
 ### Web Application:
-- Build a basic web application using **FLASK** and **HTML** to expose the model's prediction functionality.
-- The web app allows users to input customer data and receive predictions on churn status.
+- Build a basic web application using **FLASK** and **HTML**,**CSS** to expose the model's prediction functionality.
+- The web app allows users to Upload brain MRI images and receive predictions about the tumor class.
 - Ensure that the front-end is user-friendly and responsive to enhance user experience.
 
-###  AWS CI/CD Deployment:
-1. **Login to AWS Console.**
-2. **Create IAM User for Deployment** with specific access:
-   - **EC2 access:** It is a virtual machine.
-   - **ECR:** Elastic Container Registry to save your Docker image in AWS.
+###  Azure CI/CD Deployment:
+1. Login to the **Azure Portal**.
+2. Create an **Azure Container Registry**:
+   - Store **Docker** images.
+   - Retrieve the **ACR Login Server** URI.
+3. Create an **Azure App Service**:
+   - Select the **ACR image** to host the application.
+4. Configure GitHub Actions:
+   - Automate building, pushing, and deploying the application on Azure.
+   
 
-#### Description of the Deployment Steps
-- Build Docker image of the source code.
-- Push your Docker image to **ECR**.
-- Launch your **EC2** instance.
-- Pull your image from **ECR** in **EC2**.
-- Launch your Docker image in **EC2**.
+#### Required Permissions:
+- Ensure your Azure service principal has access to ACR and App Service..
 
-#### Policy
-- `AmazonEC2ContainerRegistryFullAccess`
-- `AmazonEC2FullAccess`
-
-#### Create ECR Repo to Store/Save Docker Image
-- Save the URI: `235494811035.dkr.ecr.us-east-1.amazonaws.com/customer_churn`
-
-#### Create EC2 Machine (Ubuntu)
-- Open EC2 and Install Docker in the EC2 Machine:
-
-#### Optional
-- `sudo apt-get update -y`
-- `sudo apt-get upgrade`
-
-#### Required
-
-    ```bash
-    curl -fsSL https://get.docker.com -o get-docker.sh
-    sudo sh get-docker.sh
-    sudo usermod -aG docker ubuntu
-    newgrp docker
-
-#### Configure EC2 as Self-Hosted Runner
-Go to **Settings > Actions > Runners > New Self-Hosted Runner**.
-Choose your **OS** and run the provided commands one by one.
 
 ### Export Environment Variables:
 
 Before running your application, make sure to export the following environment variables in your terminal:
 
        ```bash
-       export MONGODB_URL="mongodb+srv://<username>:<password>...."
-       export AWS_ACCESS_KEY_ID="<Your AWS Access Key ID>"
-       export AWS_SECRET_ACCESS_KEY="<Your AWS Secret Access Key>"
+       export AZURE_STORAGE_CONNECTION_STRING="<Azure Blob Storage connection string>"
+       export AZURE_APP_SERVICE_NAME="<Azure App Service name>"
+       export ACR_LOGIN_SERVER="<ACR Login Server URI>"
+       export ACR_USERNAME="<Azure Service Principal username>"
+       export ACR_PASSWORD="<Azure Service Principal password>"
 
-
-### Setup GitHub Secrets:
-
-To configure your GitHub repository secrets, add the following key-value pairs:
-
-- **AWS_ACCESS_KEY_ID**: `<Your AWS Access Key ID>`
-- **AWS_SECRET_ACCESS_KEY**: `<Your AWS Secret Access Key>`
-- **AWS_REGION**: `us-east-1`
-- **AWS_ECR_LOGIN_URI**: `235494811035.dkr.ecr.us-east-1.amazonaws.com`
-- **ECR_REPOSITORY_NAME**: `customer_churn`
 
