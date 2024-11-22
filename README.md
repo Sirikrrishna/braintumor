@@ -74,8 +74,7 @@ Instructions to set up your local environment for running the project
 ### Deployment:
 #### Containerize the Application
 - Use **Docker** to containerize the application for easy deployment and scalability.
-  '''
-  bash
+  ''' bash
   docker build -t brain_tumor_classifier .
 
 #### Set Up AWS EC2 Instance
