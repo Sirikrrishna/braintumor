@@ -10,7 +10,7 @@ An **end-to-end pipeline** for brain tumor prediction using **deep learning** fr
 - [Prediction Pipeline](#prediction-pipeline)
 - [Deployment](#deployment)
 - [Web Application](#web-application)
-- [AWS CI/CD Deployment](#aws-cicd-deployment)
+- [AZURE CI/CD Deployment](#aws-cicd-deployment)
 - [Export Environment Variables](#export-environment-variables)
 - [Setup Github Secrets](#setup-github-secrets)
 
