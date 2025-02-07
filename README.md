@@ -30,7 +30,7 @@ The project encompasses **image preprocessing**, **model training**, **evaluatio
   - **Azure App Service**: Hosting the application
   - **Azure Container Registry (ACR)**: Docker image repository
 - **CI/CD**: GitHub Actions
-- **Web Application**: HTML
+- **Web Application**: RestAPI, HTML,CSS
 
 ### How to Run:
 
