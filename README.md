@@ -90,7 +90,7 @@ Instructions to set up your local environment for running the project
   - Deploy the container to **Azure App Service**.
 
 ### Web Application:
-- Build a basic web application using **FLASK** and **HTML**,**CSS** to expose the model's prediction functionality.
+- Build a basic web application using **RESTAPI** and **HTML**,**CSS** to expose the model's prediction functionality.
 - The web app allows users to Upload brain MRI images and receive predictions about the tumor class.
 - Ensure that the front-end is user-friendly and responsive to enhance user experience.
 
